@@ -1,0 +1,143 @@
+from __future__ import annotations
+
+from functools import lru_cache
+from typing import Literal
+
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
+    watchdog_env: Literal["dev", "prod", "test"] = "dev"
+    database_url: str = "sqlite:///watchdog.db"
+    log_level: str = "INFO"
+    becker_dataset_path: str = "./data/becker"
+
+    polymarket_cli_path: str = "polymarket"
+    polymarket_expected_version: str = "0.1.4"
+    polymarket_country_code: str = "CO"
+    snapshot_interval_seconds: int = Field(default=30, ge=5, le=3600)
+    snapshot_retry_max: int = Field(default=5, ge=1, le=20)
+    snapshot_retry_base_seconds: int = Field(default=5, ge=1, le=120)
+
+    manifold_api_base_url: str = "https://api.manifold.markets/v0"
+    manifold_api_key: str | None = None
+    manifold_user_id: str | None = None
+    paper_loop_seconds: int = Field(default=60, ge=5, le=3600)
+    paper_summary_every: int = Field(default=10, ge=1, le=1000)
+
+    enable_live_trading: bool = False
+    max_position_per_market: float = Field(default=0.20, ge=0.01, le=1.0)
+    kelly_fraction: float = Field(default=0.25, ge=0.01, le=1.0)
+    max_drawdown_p95: float = Field(default=0.30, ge=0.01, le=0.95)
+    vpin_kill_threshold: float = Field(default=0.70, ge=0.5, le=1.0)
+    min_divergence: float = Field(default=0.15, ge=0.01, le=0.50)
+    min_divergence_backtest: float = Field(default=0.15, ge=0.01, le=0.50)
+    min_divergence_paper: float = Field(default=0.17, ge=0.01, le=0.60)
+    min_divergence_manifold: float = Field(
+        default=0.05, ge=0.005, le=0.60,
+        description="Minimum divergence for Manifold (play money, more mispricing)",
+    )
+    min_divergence_polymarket: float = Field(
+        default=0.02, ge=0.005, le=0.60,
+        description="Minimum divergence for Polymarket (real money, efficient markets)",
+    )
+    min_divergence_live: float = Field(default=0.20, ge=0.01, le=0.60)
+    near_resolution_hours: int = Field(default=2, ge=1, le=72)
+    near_resolution_fraction: float = Field(default=0.05, ge=0.01, le=0.5)
+    backtest_fee_rate: float = Field(default=0.005, ge=0.0, le=0.05)
+    backtest_slippage_rate: float = Field(default=0.005, ge=0.0, le=0.05)
+    backtest_spread_proxy: float = Field(default=0.01, ge=0.0, le=0.20)
+    live_validation_max_positions: int = Field(default=5, ge=1, le=50)
+    live_validation_position_size_usdc: float = Field(default=10.0, ge=1.0, le=100.0)
+    min_market_volume_usdc: float = Field(default=1000.0, ge=0.0)
+    min_market_liquidity_usdc: float = Field(default=500.0, ge=0.0)
+    executor_confidence_threshold: float = Field(default=0.85, ge=0.0, le=1.0)
+    max_positions_simultaneous: int = Field(default=5, ge=1, le=100)
+    max_position_fraction: float = Field(default=0.20, ge=0.01, le=1.0)
+
+    router_provider: Literal["mock", "openai"] = "mock"
+    router_model: str = "gpt-4o-mini"
+    executor_provider: Literal["mock", "anthropic"] = "mock"
+    executor_model: str = "claude-sonnet-4"
+    openai_api_key: str | None = None
+    anthropic_api_key: str | None = None
+
+    gdelt_enabled: bool = True
+    gdelt_poll_seconds: int = Field(default=30, ge=5, le=600)
+    rss_enabled: bool = True
+    reddit_enabled: bool = False
+    reddit_client_id: str | None = None
+    reddit_client_secret: str | None = None
+    reddit_user_agent: str = "watchdog/0.1"
+
+    # New high-signal sources
+    marketaux_enabled: bool = True
+    marketaux_api_key: str | None = None
+    polymarket_volume_spike_enabled: bool = True
+    gdelt_gkg_enabled: bool = True
+
+    brave_api_key: str | None = None
+    deepseek_api_key: str | None = None
+    gemini_api_key: str | None = None
+    telegram_bot_token: str | None = None
+    telegram_chat_id: str | None = None
+    polymarket_private_key: str | None = None
+    live_bankroll_usdc: float = Field(default=50.0, ge=1.0, le=1000000.0)
+    paper_bankroll_usdc: float = Field(default=500.0, ge=1.0, le=1000000.0)
+    btc_scalp_max_open_risk_usd: float | None = None
+    btc_scalp_min_ev_per_contract: float = 0.01        # EV threshold per $1-payout contract; see _ev_buy_yes()
+    btc_scalp_max_spread: float = 0.03                 # reject trade side if that side's CLOB spread exceeds this
+    btc_scalp_min_minutes_left: float = 0.5            # only trade when >= this many minutes to expiry
+    btc_scalp_max_minutes_left: float = 6.5            # only trade when <= this many minutes to expiry
+    btc_scalp_vol_floor: float = 0.001                 # denominator floor for z-score (prevents div-by-zero)
+    btc_scalp_min_signal_drift: float = 0.001          # skip entry if |log(curr/anchor)| < this; sub-floor signal is noise
+    btc_scalp_min_p_up_for_down: float = 0.05         # skip Down entry if p_up < this; prevents trading when model is clamped at minimum
+    btc_scalp_momentum_adjust_weight: float = 0.05     # small momentum nudge added to model prob (0 = off)
+    btc_scalp_require_clob: bool = True                # if True, skip entry when CLOB executable price unavailable
+    btc_scalp_min_best_bid: float = 0.05               # reject side when best bid < this (stub book guard)
+    btc_scalp_disable_up_entries: bool = True          # block Up-side entries pending model calibration
+
+    # Exit management — tiered thresholds
+    take_profit_pct: float = Field(default=0.10, ge=0.01, le=5.0)   # tier-1 TP (50% exit)
+    take_profit_2_pct: float = Field(default=0.20, ge=0.01, le=5.0)  # tier-2 TP (remaining 50%)
+    stop_loss_pct: float = Field(default=0.15, ge=0.01, le=1.0)       # tier-1 SL (50% exit)
+    stop_loss_2_pct: float = Field(default=0.25, ge=0.01, le=1.0)     # tier-2 SL (remaining 50%)
+    max_hold_hours: int = Field(default=48, ge=1, le=8760)             # force-close after N hours
+    max_hold_days: int = Field(default=7, ge=1, le=365)                # legacy, unused by exit_manager
+
+    # Circuit breaker / kill-switch
+    max_daily_loss_usd: float = Field(default=50.0, ge=1.0, le=10000.0)
+    n8n_webhook_url: str | None = None
+    circuit_breaker_cooldown_minutes: int = Field(default=60, ge=5, le=1440)
+
+    # Arbitrage
+    enable_arbitrage: bool = True
+    min_arb_spread: float = Field(default=0.03, ge=0.01, le=0.50)
+    max_arb_position_size: float = Field(default=20.0, ge=1.0, le=1000.0)
+
+    # Short-term trading filters
+    max_resolution_hours: int = Field(default=168, ge=1, le=8760)
+    min_resolution_hours: int = Field(default=6, ge=0, le=168)
+    min_volume_24h: float = Field(default=1000.0, ge=0.0, le=1000000000.0)
+
+    experiment_id: str = "feb2026_v1"
+
+    # Strategy module feature flags
+    enable_btc_scalp: bool = False  # Retired 2026-03-29 — see BTC_SCALP_RETROSPECTIVE.md
+    enable_intra_event_arb: bool = True
+    enable_pair_cost_scan: bool = True
+    enable_resolution_filter: bool = True
+    enable_whale_detector: bool = True
+    enable_ofi_signal: bool = True
+    enable_ensemble_signal: bool = True
+
+    # Kelly sizing parameters
+    kelly_opportunity_cost_rate: float = Field(default=0.05, ge=0.0, le=1.0)
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    return Settings()

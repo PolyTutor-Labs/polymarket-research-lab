@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+
+# Virtual envs
+.venv/
+venv/
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Local env/config
+.env
+
+# Local databases and state
+*.db
+*.sqlite
+*.sqlite3
+backtest_results/
+becker_analysis/
+
+# OS/editor noise
+.DS_Store
+.vscode/
+.idea/
+
+# Packaging metadata
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# Local tooling / unverified binaries (do not re-commit)
+.local/bin/
