@@ -49,7 +49,7 @@ Do not change research formulas or historical results just to make a test pass.
 ## Pull requests
 
 - Describe the problem and the verified behavior after the change.
-- Link any docs you updated (`README.md`, `docs/*`, `SECURITY.md`).
+- Link any docs you updated (`README.md`, `docs/*`, `SECURITY.md`, `CHANGELOG.md`).
 - If you change calibration, backtest, or strategy behavior, say so explicitly — those are not “docs-only.”
 - Do not claim official Polymarket affiliation or investment advice.
 - Do not treat paper PnL or `go-live-check` as a live-trading endorsement.
