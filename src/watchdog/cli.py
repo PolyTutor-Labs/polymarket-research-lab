@@ -9,9 +9,9 @@ import typer
 from sqlalchemy import text
 
 from watchdog.core.config import Settings, get_settings
-from watchdog.core.paths import output_dir, seed_sql_candidates
 from watchdog.core.exceptions import GeoblockError, PolymarketCliError
 from watchdog.core.logging import configure_logging
+from watchdog.core.paths import output_dir, seed_sql_candidates
 from watchdog.db.base import Base
 from watchdog.db.session import build_engine, build_session_factory
 from watchdog.llm.executor import build_executor
