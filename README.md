@@ -52,6 +52,11 @@ Watchdog: Lean dual-agent prediction market intelligence system with calibrated 
 +--------------------------+
 ```
 
+## Security
+
+See [SECURITY.md](SECURITY.md) for secret handling, the tracked-file scanner,
+dataset classification, and how to report issues.
+
 ## Quickstart
 
 ```bash

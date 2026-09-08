@@ -15,6 +15,20 @@ venv/
 
 # Local env/config
 .env
+.env.*
+!.env.example
+
+# Credentials and secret material
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+credentials.json
+secrets.json
+.secrets/
 
 # Local databases and state
 *.db

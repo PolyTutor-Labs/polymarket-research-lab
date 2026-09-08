@@ -13,4 +13,9 @@ RUN pip install -e .
 # Copy rest of project
 COPY . .
 
+# Research image should not run as root.
+RUN adduser --disabled-password --gecos "" --uid 1000 watchdog \
+    && chown -R watchdog:watchdog /app
+USER watchdog
+
 CMD ["watchdog", "run-btc-scalp"]
