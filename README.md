@@ -132,7 +132,7 @@ watchdog run-live-validation --experiment-id feb2026_v1 --bankroll 50
 
 | Strategy | Retired | Reason | Reference |
 |----------|---------|--------|-----------|
-| btc_scalp | 2026-03-29 | No profitable regime found across 332 paper trades | [BTC_SCALP_RETROSPECTIVE.md](BTC_SCALP_RETROSPECTIVE.md) |
+| btc_scalp | 2026-03-29 | No profitable regime found across 332 paper trades | [BTC_SCALP_RETROSPECTIVE.md](docs/BTC_SCALP_RETROSPECTIVE.md) |
 
 `enable_btc_scalp` defaults to `false` in Settings. `railway.json` still lists
 `watchdog run-btc-scalp` as the start command — update or disable the Railway

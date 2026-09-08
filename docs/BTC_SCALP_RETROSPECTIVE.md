@@ -60,7 +60,7 @@ the correct directional side slightly before resolution.
 
 ## Final Evaluation Results
 
-Offline evaluation run on 2026-03-29 using `scripts/btc_scalp_edge_eval.py`
+Offline evaluation run on 2026-03-29 using `research/analysis/btc_scalp_edge_eval.py`
 across 332 deduplicated closed trades (2026-03-26 to 2026-03-27).
 
 **Overall**

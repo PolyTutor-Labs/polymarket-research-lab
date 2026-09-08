@@ -1492,7 +1492,7 @@ def run_btc_scalp_command() -> None:
 
     settings = get_settings()
     if not settings.enable_btc_scalp:
-        typer.echo("btc_scalp is disabled (enable_btc_scalp=false). See BTC_SCALP_RETROSPECTIVE.md.")
+        typer.echo("btc_scalp is disabled (enable_btc_scalp=false). See docs/BTC_SCALP_RETROSPECTIVE.md.")
         return
 
     from watchdog.notifications.telegram import send_telegram

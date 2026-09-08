@@ -14,9 +14,9 @@ Columns:
   trade_status, trade_pnl, trade_closed_at, outcome
 
 Usage:
-    python scripts/btc_scalp_export.py
-    python scripts/btc_scalp_export.py --out data/btc_scalp_history.csv
-    python scripts/btc_scalp_export.py --since 2026-03-01
+    python research/analysis/btc_scalp_export.py
+    python research/analysis/btc_scalp_export.py --out data/btc_scalp_history.csv
+    python research/analysis/btc_scalp_export.py --since 2026-03-01
 """
 from __future__ import annotations
 

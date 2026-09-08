@@ -13,9 +13,9 @@ Optionally fits a logistic regression calibration model on p_up_model vs outcome
 and prints recommended probability adjustment coefficients.
 
 Usage:
-    python scripts/btc_scalp_analysis.py
-    python scripts/btc_scalp_analysis.py --csv data/btc_scalp_history.csv
-    python scripts/btc_scalp_analysis.py --calibrate
+    python research/analysis/btc_scalp_analysis.py
+    python research/analysis/btc_scalp_analysis.py --csv data/btc_scalp_history.csv
+    python research/analysis/btc_scalp_analysis.py --calibrate
 """
 from __future__ import annotations
 
@@ -163,7 +163,7 @@ def main() -> None:
             rows = list(reader)
     except FileNotFoundError:
         print(f"ERROR: CSV not found: {args.csv}")
-        print("Run:  python scripts/btc_scalp_export.py  first.")
+        print("Run:  python research/analysis/btc_scalp_export.py  first.")
         sys.exit(1)
 
     # Only analyse CLOSED trades with known pnl
