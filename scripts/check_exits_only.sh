@@ -1,13 +1,30 @@
 #!/bin/bash
-# Exit-only checker — runs every 15 minutes via launchd (com.poly-agent.exits)
+# Exit-only checker — intended for a local scheduler (every ~15 minutes).
 # Checks trailing stops, TP/SL, and time exits on all open paper positions.
 # Does NOT place new trades.
-# Log: /Users/danielstevenrodriguezsandoval/poly-agent/logs/exits.log
+# Log: $POLY_RESEARCH_LOG_DIR/exits.log  (default: <repo>/logs/exits.log)
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$SCRIPT_DIR"
-source .venv/bin/activate
-WATCHDOG_PYTHON="$SCRIPT_DIR/.venv/bin/python"
+
+LOG_DIR="${POLY_RESEARCH_LOG_DIR:-$SCRIPT_DIR/logs}"
+mkdir -p "$LOG_DIR"
+
+if [ -f "$SCRIPT_DIR/.venv/bin/activate" ]; then
+    # shellcheck source=/dev/null
+    source "$SCRIPT_DIR/.venv/bin/activate"
+elif [ -f "$SCRIPT_DIR/.venv/Scripts/activate" ]; then
+    # shellcheck source=/dev/null
+    source "$SCRIPT_DIR/.venv/Scripts/activate"
+fi
+
+if [ -x "$SCRIPT_DIR/.venv/bin/python" ]; then
+    WATCHDOG_PYTHON="$SCRIPT_DIR/.venv/bin/python"
+elif [ -x "$SCRIPT_DIR/.venv/Scripts/python.exe" ]; then
+    WATCHDOG_PYTHON="$SCRIPT_DIR/.venv/Scripts/python.exe"
+else
+    WATCHDOG_PYTHON="$(command -v python3 || command -v python)"
+fi
 MAX_RUNTIME_SECONDS=300
 
 echo "=== $(date) Exit Check ==="

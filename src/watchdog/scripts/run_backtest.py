@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
-from pathlib import Path
 
 import pandas as pd
 
@@ -10,6 +9,7 @@ from watchdog.backtest.backtester import Backtester
 from watchdog.backtest.historical_loader import BeckerHistoricalLoader
 from watchdog.backtest.metrics import evaluate_pass_fail
 from watchdog.core.config import get_settings
+from watchdog.core.paths import output_dir
 
 
 def _print_report(results) -> None:
@@ -127,7 +127,7 @@ def main(
         max_drawdown=results.max_drawdown,
     )
 
-    out_dir = Path("./backtest_results")
+    out_dir = output_dir() / "backtest_results"
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_path = out_dir / f"{ts}.json"

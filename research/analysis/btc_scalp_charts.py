@@ -1,7 +1,7 @@
 """BTC Scalp Performance Charts and Markdown Report.
 
 Generates PNG charts and a markdown summary from the history CSV produced by
-btc_scalp_export.py.  Writes everything to --out-dir (default: data/reports/).
+btc_scalp_export.py.  Writes everything to --out-dir (default: $POLY_RESEARCH_OUTPUT_DIR/reports).
 
 Charts produced:
   1. equity_curve.png          — cumulative PnL over time
@@ -18,7 +18,7 @@ Dependencies: matplotlib (pip install matplotlib).
 
 Usage:
     python research/analysis/btc_scalp_charts.py
-    python research/analysis/btc_scalp_charts.py --csv data/btc_scalp_history.csv --out-dir data/reports
+    python research/analysis/btc_scalp_charts.py --csv data/btc_scalp_history.csv --out-dir outputs/reports
 """
 from __future__ import annotations
 
@@ -28,9 +28,21 @@ import os
 import sys
 from collections import defaultdict
 from datetime import datetime
+from pathlib import Path
 
-DEFAULT_CSV = "data/btc_scalp_history.csv"
-DEFAULT_OUT_DIR = "data/reports"
+for _parent in Path(__file__).resolve().parents:
+    if (_parent / "pyproject.toml").is_file():
+        _src = str(_parent / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        break
+else:
+    raise RuntimeError("Could not locate repository root (pyproject.toml)")
+
+from watchdog.core.paths import data_dir, output_dir, resolve_user_path  # noqa: E402
+
+DEFAULT_CSV = "btc_scalp_history.csv"
+DEFAULT_OUT_DIR = "reports"
 
 
 def _safe_float(v: str | None) -> float | None:
@@ -79,9 +91,11 @@ def _parse_dt(s: str) -> datetime | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate BTC scalp performance charts")
-    parser.add_argument("--csv", default=DEFAULT_CSV)
-    parser.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
+    parser.add_argument("--csv", default=None, help="History CSV (default: <data>/btc_scalp_history.csv)")
+    parser.add_argument("--out-dir", default=None, help="Chart output directory (default: <outputs>/reports)")
     args = parser.parse_args()
+    args.csv = str(resolve_user_path(args.csv) if args.csv else data_dir() / DEFAULT_CSV)
+    args.out_dir = str(resolve_user_path(args.out_dir) if args.out_dir else output_dir() / DEFAULT_OUT_DIR)
 
     try:
         import matplotlib

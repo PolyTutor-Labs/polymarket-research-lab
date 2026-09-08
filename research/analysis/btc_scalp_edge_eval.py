@@ -20,10 +20,21 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+for _parent in Path(__file__).resolve().parents:
+    if (_parent / "pyproject.toml").is_file():
+        _src = str(_parent / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        break
+else:
+    raise RuntimeError("Could not locate repository root (pyproject.toml)")
+
+from watchdog.core.paths import data_dir, resolve_user_path  # noqa: E402
+
 # All CSVs to merge by default (deduped by trade_id).
-DEFAULT_CSVS = [
-    "data/btc_scalp_history.csv",
-    "data/btc_scalp_post_patch.csv",
+DEFAULT_CSV_NAMES = [
+    "btc_scalp_history.csv",
+    "btc_scalp_post_patch.csv",
 ]
 
 EDGE_WIN_THRESHOLD   = 0.55   # win rate must exceed this to claim edge
@@ -209,16 +220,18 @@ def _has_edge(results: list[tuple[str, int, float, float]]) -> tuple[bool, list[
 def main() -> None:
     parser = argparse.ArgumentParser(description="BTC scalp edge evaluation")
     parser.add_argument(
-        "--csv", nargs="+", default=DEFAULT_CSVS,
+        "--csv", nargs="+", default=None,
         help="CSV file(s) to analyse (will be merged & deduped)",
     )
     args = parser.parse_args()
+    csv_paths = args.csv or [str(data_dir() / name) for name in DEFAULT_CSV_NAMES]
+    csv_paths = [str(resolve_user_path(path)) for path in csv_paths]
 
-    trade_rows = load_trade_rows(args.csv)
+    trade_rows = load_trade_rows(csv_paths)
 
     print(f"\n{'='*70}")
     print("  BTC Scalp Edge Evaluation  —  offline, no live code")
-    print(f"  Sources: {', '.join(args.csv)}")
+    print(f"  Sources: {', '.join(csv_paths)}")
     print(f"{'='*70}")
     print(f"  Distinct closed trades analysed: {len(trade_rows)}")
 

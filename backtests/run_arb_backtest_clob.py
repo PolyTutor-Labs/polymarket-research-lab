@@ -11,10 +11,10 @@ Usage:
     python backtests/run_arb_backtest_clob.py --skip-fetch   # reuse existing CSV
     python backtests/run_arb_backtest_clob.py --max-events 500
 
-Output:
-    data/price_history.csv                    — daily price per token
-    data/skipped_tokens.txt                   — tokens with empty CLOB history
-    backtests/results/arb_backtest_monthly.csv — monthly performance
+Output (repo-relative defaults; override with POLY_RESEARCH_*):
+    <data>/price_history.csv              — daily price per token
+    <data>/skipped_tokens.txt             — tokens with empty CLOB history
+    <outputs>/arb_backtest_monthly.csv    — monthly performance
 """
 
 from __future__ import annotations
@@ -35,9 +35,12 @@ import httpx
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-PROJECT_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(PROJECT_ROOT / "src"))
+_REPO_ROOT = next(
+    parent for parent in Path(__file__).resolve().parents if (parent / "pyproject.toml").is_file()
+)
+sys.path.insert(0, str(_REPO_ROOT / "src"))
 
+from watchdog.core.paths import data_dir, output_dir, sqlite_file_path  # noqa: E402
 from watchdog.db.base import Base  # noqa: E402
 from watchdog.strategies.intra_event_arb import IntraEventArbScanner  # noqa: E402
 
@@ -46,10 +49,10 @@ GAMMA_API = "https://gamma-api.polymarket.com"
 CLOB_API = "https://clob.polymarket.com"
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-DB_PATH = PROJECT_ROOT / "watchdog.db"
-PRICE_HISTORY_CSV = PROJECT_ROOT / "data" / "price_history.csv"
-SKIPPED_TOKENS_TXT = PROJECT_ROOT / "data" / "skipped_tokens.txt"
-MONTHLY_CSV = PROJECT_ROOT / "backtests" / "results" / "arb_backtest_monthly.csv"
+DB_PATH = sqlite_file_path()
+PRICE_HISTORY_CSV = data_dir() / "price_history.csv"
+SKIPPED_TOKENS_TXT = data_dir() / "skipped_tokens.txt"
+MONTHLY_CSV = output_dir() / "arb_backtest_monthly.csv"
 
 # ── Backtest parameters ────────────────────────────────────────────────────────
 RATE_LIMIT_SLEEP = 0.20          # 5 req/sec
@@ -618,7 +621,7 @@ def main() -> None:
     parser.add_argument(
         "--skip-fetch",
         action="store_true",
-        help="Skip CLOB API calls; reuse data/price_history.csv if it exists.",
+        help="Skip CLOB API calls; reuse price_history.csv under the data directory.",
     )
     parser.add_argument(
         "--max-events",

@@ -8,16 +8,23 @@ from __future__ import annotations
 import argparse
 import sys
 from datetime import UTC, datetime
+from pathlib import Path
 
-from sqlalchemy import select
+for _parent in Path(__file__).resolve().parents:
+    if (_parent / "pyproject.toml").is_file():
+        _src = str(_parent / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        break
+else:
+    raise RuntimeError("Could not locate repository root (pyproject.toml)")
 
-# Make sure the package is importable when run from the repo root
-sys.path.insert(0, "src")
+from sqlalchemy import select  # noqa: E402
 
-from watchdog.core.config import get_settings
-from watchdog.db.init import init_db
-from watchdog.db.models import Market, Trade
-from watchdog.db.session import build_engine, build_session_factory
+from watchdog.core.config import get_settings  # noqa: E402
+from watchdog.db.init import init_db  # noqa: E402
+from watchdog.db.models import Market, Trade  # noqa: E402
+from watchdog.db.session import build_engine, build_session_factory  # noqa: E402
 
 
 def main() -> None:

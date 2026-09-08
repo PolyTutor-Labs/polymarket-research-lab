@@ -8,6 +8,8 @@ import httpx
 import numpy as np
 import pandas as pd
 
+from watchdog.core.paths import data_dir, resolve_user_path
+
 DATA_URL = "https://raw.githubusercontent.com/RupertMa/polymarket-analysis/main/data/polymarket_trades.parquet"
 DOWNLOAD_FILENAME = "polymarket_trades.parquet"
 SYNTHETIC_FILENAME = "polymarket_trades_synthetic.parquet"
@@ -47,10 +49,15 @@ def _generate_synthetic_parquet(path: Path, n_rows: int = 500) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Download Becker dataset parquet with synthetic fallback")
-    parser.add_argument("--output-dir", type=str, default="./data/becker")
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default=None,
+        help="Dataset directory (default: $POLY_RESEARCH_DATA_DIR/becker or <repo>/data/becker)",
+    )
     args = parser.parse_args()
 
-    output_dir = Path(args.output_dir)
+    output_dir = resolve_user_path(args.output_dir) if args.output_dir else data_dir() / "becker"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     existing_parquets = sorted(output_dir.glob("*.parquet"))

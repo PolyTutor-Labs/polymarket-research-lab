@@ -9,6 +9,7 @@ import typer
 from sqlalchemy import text
 
 from watchdog.core.config import Settings, get_settings
+from watchdog.core.paths import output_dir, seed_sql_candidates
 from watchdog.core.exceptions import GeoblockError, PolymarketCliError
 from watchdog.core.logging import configure_logging
 from watchdog.db.base import Base
@@ -37,8 +38,6 @@ def _build_runtime() -> tuple[Settings, PolymarketCli]:
 
 @app.command("init-db")
 def init_db_command() -> None:
-    import os
-
     settings, _ = _build_runtime()
     engine = build_engine(settings)
     Base.metadata.create_all(engine)
@@ -46,7 +45,13 @@ def init_db_command() -> None:
     db_url = str(engine.url)
     if db_url.startswith("sqlite:///"):
         rel = db_url[len("sqlite:///"):]
-        abs_path = os.path.abspath(rel) if rel and not rel.startswith("/") else rel or ":memory:"
+        db_path = Path(rel)
+        if not rel or rel == ":memory:":
+            abs_path = rel or ":memory:"
+        elif db_path.is_absolute():
+            abs_path = str(db_path)
+        else:
+            abs_path = str(db_path.resolve())
         typer.echo(f"DB path: {abs_path}  (url={db_url})")
     else:
         typer.echo(f"DB url: {db_url}")
@@ -61,7 +66,6 @@ def restore_baseline_command() -> None:
     Portfolio snapshots: always written when all existing snapshots are botched
     (current_balance == starting_capital). Skipped when valid PnL data exists.
     """
-    import os
     from datetime import datetime
 
     from watchdog.db.models import PortfolioSnapshot
@@ -82,13 +86,7 @@ def restore_baseline_command() -> None:
     if trade_count >= 100:
         typer.echo(f"restore-baseline: trade seeding skipped — DB already has {trade_count} trades")
     else:
-        _here = Path(__file__).parent
-        candidates = [
-            Path(os.environ.get("GITHUB_WORKSPACE", "")) / "db" / "seed_data.sql",  # CI
-            _here.parent.parent / "db" / "seed_data.sql",   # editable local install
-            Path(os.getcwd()) / "db" / "seed_data.sql",     # fallback
-            Path("/home/runner/work/poly-what/poly-what/db/seed_data.sql"),  # hardcoded runner
-        ]
+        candidates = seed_sql_candidates()
         seed_path = next((p for p in candidates if p.exists()), None)
         if seed_path is None:
             typer.echo("restore-baseline: seed file not found — checked: " + ", ".join(str(p) for p in candidates), err=True)
@@ -1720,8 +1718,8 @@ def simulate_capital_command(
 
     typer.echo("")
 
-    reports_dir = Path("reports")
-    reports_dir.mkdir(exist_ok=True)
+    reports_dir = output_dir() / "reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
     today_str = datetime.now(UTC).strftime("%Y%m%d")
     capital_str = str(int(capital))
     csv_path = reports_dir / f"simulation_{capital_str}_{today_str}.csv"
@@ -1930,18 +1928,10 @@ def update_seed_command() -> None:
 
     Trades: INSERT OR IGNORE (never loses newer rows)
     """
-    import os
-
     settings = get_settings()
     engine = build_engine(settings)
 
-    # Find output path: GITHUB_WORKSPACE first (CI), then repo-relative paths
-    _here = Path(__file__).parent
-    candidates = [
-        Path(os.environ.get("GITHUB_WORKSPACE", "")) / "db" / "seed_data.sql",
-        _here.parent.parent / "db" / "seed_data.sql",   # editable local install
-        Path(os.getcwd()) / "db" / "seed_data.sql",
-    ]
+    candidates = seed_sql_candidates()
     out_path = next((p for p in candidates if p.parent.is_dir()), None)
     if out_path is None:
         typer.echo("update-seed: db/ directory not found", err=True)

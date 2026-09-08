@@ -3,13 +3,13 @@ from __future__ import annotations
 import argparse
 import json
 from datetime import UTC, datetime
-from pathlib import Path
 
 import numpy as np
 
 from watchdog.backtest.historical_loader import BeckerHistoricalLoader
 from watchdog.backtest.metrics import monte_carlo_drawdown_distribution
 from watchdog.core.config import get_settings
+from watchdog.core.paths import output_dir
 from watchdog.risk.kelly import EmpiricalKellySizer
 
 
@@ -107,7 +107,7 @@ def main() -> None:
     }
 
     print("\n[5/5] Save report")
-    out_dir = Path("./becker_analysis")
+    out_dir = output_dir() / "becker_analysis"
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_path = out_dir / f"{ts}_report.json"

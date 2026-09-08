@@ -24,8 +24,20 @@ import csv
 import math
 import sys
 from collections import defaultdict
+from pathlib import Path
 
-DEFAULT_CSV = "data/btc_scalp_history.csv"
+for _parent in Path(__file__).resolve().parents:
+    if (_parent / "pyproject.toml").is_file():
+        _src = str(_parent / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        break
+else:
+    raise RuntimeError("Could not locate repository root (pyproject.toml)")
+
+from watchdog.core.paths import data_dir, resolve_user_path  # noqa: E402
+
+DEFAULT_CSV = "btc_scalp_history.csv"
 
 
 # ── helpers ─────────────────────────────────────────────────────────────────
@@ -149,13 +161,14 @@ def _logistic_fit(xs: list[float], ys: list[int], lr: float = 0.1, iters: int = 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Analyse BTC scalp history CSV")
-    parser.add_argument("--csv", default=DEFAULT_CSV, help="Path to history CSV")
+    parser.add_argument("--csv", default=None, help="Path to history CSV (default: <data>/btc_scalp_history.csv)")
     parser.add_argument(
         "--calibrate",
         action="store_true",
         help="Fit logistic calibration model and print coefficients",
     )
     args = parser.parse_args()
+    args.csv = str(resolve_user_path(args.csv) if args.csv else data_dir() / DEFAULT_CSV)
 
     try:
         with open(args.csv, newline="") as f:

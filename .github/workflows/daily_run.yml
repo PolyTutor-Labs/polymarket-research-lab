@@ -17,9 +17,8 @@ env:
   MANIFOLD_USER_ID: ${{ secrets.MANIFOLD_USER_ID }}
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-  # Hardcoded absolute path — github.workspace is not reliable in top-level env block.
-  # This is the canonical GitHub-hosted ubuntu-latest runner path.
-  DATABASE_URL: sqlite:////home/runner/work/poly-what/poly-what/watchdog.db
+  # Repo-relative SQLite URL. Python resolves it against the checkout root.
+  DATABASE_URL: sqlite:///watchdog.db
 
 jobs:
   run-bot:
@@ -48,7 +47,7 @@ jobs:
         with:
           workflow: daily_run.yml
           name: watchdog-db
-          path: /home/runner/work/poly-what/poly-what/
+          path: ${{ github.workspace }}
           if_no_artifact_found: ignore
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -137,7 +136,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: watchdog-db
-          path: /home/runner/work/poly-what/poly-what/watchdog.db
+          path: watchdog.db
           retention-days: 7
           overwrite: true
 
@@ -168,7 +167,7 @@ jobs:
         with:
           workflow: daily_run.yml
           name: watchdog-db
-          path: /home/runner/work/poly-what/poly-what/
+          path: ${{ github.workspace }}
           if_no_artifact_found: ignore
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -209,7 +208,7 @@ jobs:
         with:
           workflow: daily_run.yml
           name: watchdog-db
-          path: /home/runner/work/poly-what/poly-what/
+          path: ${{ github.workspace }}
           if_no_artifact_found: ignore
           github_token: ${{ secrets.GITHUB_TOKEN }}
 

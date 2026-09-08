@@ -12,6 +12,8 @@ from typing import Any, ClassVar
 import duckdb
 import pandas as pd
 
+from watchdog.core.paths import resolve_user_path
+
 
 @dataclass(slots=True)
 class ColumnBinding:
@@ -36,7 +38,7 @@ class BeckerHistoricalLoader:
     }
 
     def __init__(self, dataset_path: str | Path) -> None:
-        self.dataset_path = Path(dataset_path)
+        self.dataset_path = resolve_user_path(dataset_path)
         self.parquet_glob = str(self.dataset_path / "**/*.parquet")
 
         if not self.dataset_path.exists():
