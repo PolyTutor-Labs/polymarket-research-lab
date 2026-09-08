@@ -146,4 +146,4 @@ service if it is still running.
 - `python -m watchdog.scripts.run_backtest --platform polymarket --domain politics`
 - `python -m watchdog.scripts.run_market_maker --dry-run`
 - `python -m watchdog.scripts.run_becker_analysis --platform polymarket`
-- `python -m watchdog.scripts.download_becker_data --output-dir ./data/becker`
+- `python -m watchdog.scripts.download_becker_data` (writes to `$POLY_RESEARCH_DATA_DIR/becker` or `./data/becker`)

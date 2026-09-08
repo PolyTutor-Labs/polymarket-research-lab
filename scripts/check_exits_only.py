@@ -10,18 +10,26 @@ import asyncio
 import logging
 import sys
 from datetime import UTC, datetime
+from pathlib import Path
 
-from sqlalchemy import select
+for _parent in Path(__file__).resolve().parents:
+    if (_parent / "pyproject.toml").is_file():
+        _src = str(_parent / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        break
+else:
+    raise RuntimeError("Could not locate repository root (pyproject.toml)")
 
-sys.path.insert(0, "src")
+from sqlalchemy import select  # noqa: E402
 
-from watchdog.core.config import get_settings
-from watchdog.core.logging import configure_logging
-from watchdog.db.init import init_db
-from watchdog.db.models import Market, Trade
-from watchdog.db.session import build_engine, build_session_factory
-from watchdog.market_data.manifold_client import ManifoldClient
-from watchdog.strategies.exit_manager import ExitManager
+from watchdog.core.config import get_settings  # noqa: E402
+from watchdog.core.logging import configure_logging  # noqa: E402
+from watchdog.db.init import init_db  # noqa: E402
+from watchdog.db.models import Market, Trade  # noqa: E402
+from watchdog.db.session import build_engine, build_session_factory  # noqa: E402
+from watchdog.market_data.manifold_client import ManifoldClient  # noqa: E402
+from watchdog.strategies.exit_manager import ExitManager  # noqa: E402
 
 LOGGER = logging.getLogger(__name__)
 

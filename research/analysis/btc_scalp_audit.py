@@ -26,8 +26,20 @@ import argparse
 import contextlib
 import csv
 import sys
+from pathlib import Path
 
-DEFAULT_CSV = "data/btc_scalp_history_after_b580925.csv"
+for _parent in Path(__file__).resolve().parents:
+    if (_parent / "pyproject.toml").is_file():
+        _src = str(_parent / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        break
+else:
+    raise RuntimeError("Could not locate repository root (pyproject.toml)")
+
+from watchdog.core.paths import data_dir, resolve_user_path  # noqa: E402
+
+DEFAULT_CSV = "btc_scalp_history_after_b580925.csv"
 DEFAULT_LIMIT = 20
 
 
@@ -62,8 +74,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="BTC scalp raw-trade truth-table audit")
     parser.add_argument(
         "--csv",
-        default=DEFAULT_CSV,
-        help="Path to btc_scalp_export CSV",
+        default=None,
+        help="Path to btc_scalp_export CSV (default: <data>/btc_scalp_history_after_b580925.csv)",
     )
     parser.add_argument(
         "--limit",
@@ -72,6 +84,7 @@ def main() -> None:
         help="Max trades to show (default 20)",
     )
     args = parser.parse_args()
+    args.csv = str(resolve_user_path(args.csv) if args.csv else data_dir() / DEFAULT_CSV)
 
     try:
         with open(args.csv, newline="") as f:

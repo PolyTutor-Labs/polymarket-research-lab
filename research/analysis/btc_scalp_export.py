@@ -24,16 +24,25 @@ import argparse
 import csv
 import sys
 from datetime import UTC, datetime
+from pathlib import Path
 
-sys.path.insert(0, "src")
+for _parent in Path(__file__).resolve().parents:
+    if (_parent / "pyproject.toml").is_file():
+        _src = str(_parent / "src")
+        if _src not in sys.path:
+            sys.path.insert(0, _src)
+        break
+else:
+    raise RuntimeError("Could not locate repository root (pyproject.toml)")
 
-from sqlalchemy import select
+from sqlalchemy import select  # noqa: E402
 
-from watchdog.core.config import get_settings
-from watchdog.db.models import BtcScanLog, Market, Trade
-from watchdog.db.session import build_engine, build_session_factory
+from watchdog.core.config import get_settings  # noqa: E402
+from watchdog.core.paths import data_dir, resolve_user_path  # noqa: E402
+from watchdog.db.models import BtcScanLog, Market, Trade  # noqa: E402
+from watchdog.db.session import build_engine, build_session_factory  # noqa: E402
 
-DEFAULT_OUT = "data/btc_scalp_history.csv"
+DEFAULT_OUT = "btc_scalp_history.csv"
 
 COLUMNS = [
     "timestamp_utc",
@@ -82,13 +91,14 @@ def _fmt_dt(dt: datetime | None) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Export BTC scalp history to CSV")
-    parser.add_argument("--out", default=DEFAULT_OUT, help="Output CSV path")
+    parser.add_argument("--out", default=None, help="Output CSV path (default: <data>/btc_scalp_history.csv)")
     parser.add_argument(
         "--since",
         default=None,
         help="Only export rows from this date onward (YYYY-MM-DD UTC)",
     )
     args = parser.parse_args()
+    args.out = str(resolve_user_path(args.out) if args.out else data_dir() / DEFAULT_OUT)
 
     settings = get_settings()
     engine = build_engine(settings)

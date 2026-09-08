@@ -6,14 +6,20 @@ from typing import Literal
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from watchdog.core.paths import data_dir, repo_root
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=str(repo_root() / ".env"),
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
     watchdog_env: Literal["dev", "prod", "test"] = "dev"
     database_url: str = "sqlite:///watchdog.db"
     log_level: str = "INFO"
-    becker_dataset_path: str = "./data/becker"
+    becker_dataset_path: str = Field(default_factory=lambda: str(data_dir() / "becker"))
 
     polymarket_cli_path: str = "polymarket"
     polymarket_expected_version: str = "0.1.4"

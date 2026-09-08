@@ -6,11 +6,11 @@ Usage
     python backtests/backtest_arb.py --csv /path/to/markets.csv
 
 # Download from Kaggle first (requires kaggle CLI + API key):
-    kaggle datasets download <dataset-slug> -p /tmp/kaggle --unzip
-    python backtests/backtest_arb.py --csv /tmp/kaggle/markets.csv
+    kaggle datasets download <dataset-slug> -p ./data/kaggle --unzip
+    python backtests/backtest_arb.py --csv ./data/kaggle/markets.csv
 
 # Override output path:
-    python backtests/backtest_arb.py --csv markets.csv --out backtests/results/arb_backtest.csv
+    python backtests/backtest_arb.py --csv markets.csv --out ./outputs/arb_backtest.csv
 
 # Filter to a specific date range:
     python backtests/backtest_arb.py --csv markets.csv --start 2024-01-01 --end 2024-06-30
@@ -46,10 +46,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Add project src to path when run directly.
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+_REPO_ROOT = next(
+    parent for parent in Path(__file__).resolve().parents if (parent / "pyproject.toml").is_file()
+)
+sys.path.insert(0, str(_REPO_ROOT / "src"))
 
-from watchdog.db.base import Base
-from watchdog.strategies.intra_event_arb import IntraEventArbScanner
+from watchdog.core.paths import output_dir, resolve_user_path  # noqa: E402
+from watchdog.db.base import Base  # noqa: E402
+from watchdog.strategies.intra_event_arb import IntraEventArbScanner  # noqa: E402
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 # Kaggle column names (adjust here if the dataset uses different headers).
@@ -295,8 +299,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--out",
-        default="backtests/results/arb_backtest.csv",
-        help="Output CSV path (default: backtests/results/arb_backtest.csv).",
+        default=None,
+        help="Output CSV path (default: $POLY_RESEARCH_OUTPUT_DIR/arb_backtest.csv).",
     )
     parser.add_argument(
         "--start",
@@ -313,9 +317,12 @@ def main() -> None:
     start = date.fromisoformat(args.start) if args.start else None
     end = date.fromisoformat(args.end) if args.end else None
 
+    csv_path = resolve_user_path(args.csv)
+    out_path = resolve_user_path(args.out) if args.out else output_dir() / "arb_backtest.csv"
+
     run_backtest(
-        csv_path=args.csv,
-        out_path=args.out,
+        csv_path=str(csv_path),
+        out_path=str(out_path),
         start_date=start,
         end_date=end,
     )

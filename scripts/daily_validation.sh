@@ -1,14 +1,25 @@
 #!/bin/bash
 # Daily paper trading accumulation script
-# Run via launchd: com.poly-agent.daily (3x daily: 1am, 9am, 5pm)
-# Script: /Users/danielstevenrodriguezsandoval/poly-agent/scripts/daily_validation.sh
-# Log:    /Users/danielstevenrodriguezsandoval/poly-agent/logs/daily.log
+# Run from the repository root (or via any local scheduler).
+# Log: $POLY_RESEARCH_LOG_DIR/daily.log  (default: <repo>/logs/daily.log)
 
 # Do NOT use set -e — we want both platforms to run even if one fails.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$SCRIPT_DIR"
-source .venv/bin/activate
+
+LOG_DIR="${POLY_RESEARCH_LOG_DIR:-$SCRIPT_DIR/logs}"
+mkdir -p "$LOG_DIR"
+
+if [ -f "$SCRIPT_DIR/.venv/bin/activate" ]; then
+    # Unix / macOS venv
+    # shellcheck source=/dev/null
+    source "$SCRIPT_DIR/.venv/bin/activate"
+elif [ -f "$SCRIPT_DIR/.venv/Scripts/activate" ]; then
+    # Windows venv (Git Bash)
+    # shellcheck source=/dev/null
+    source "$SCRIPT_DIR/.venv/Scripts/activate"
+fi
 
 echo "=== $(date) Daily Validation Run ==="
 
