@@ -9,8 +9,8 @@ Outputs bucketed win-rate + avg-pnl tables for the six dimensions requested,
 then prints a binary verdict: RETIRE or REBUILD_FOR_REGIME.
 
 Usage:
-    python scripts/btc_scalp_edge_eval.py
-    python scripts/btc_scalp_edge_eval.py --csv data/btc_scalp_post_patch.csv
+    python research/analysis/btc_scalp_edge_eval.py
+    python research/analysis/btc_scalp_edge_eval.py --csv data/btc_scalp_post_patch.csv
 """
 from __future__ import annotations
 

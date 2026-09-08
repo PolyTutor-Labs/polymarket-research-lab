@@ -7,14 +7,14 @@ No external dataset download required. Data sources:
   3. clob.polymarket.com  — daily price history per token
 
 Usage:
-    python scripts/run_arb_backtest_clob.py
-    python scripts/run_arb_backtest_clob.py --skip-fetch   # reuse existing CSV
-    python scripts/run_arb_backtest_clob.py --max-events 500
+    python backtests/run_arb_backtest_clob.py
+    python backtests/run_arb_backtest_clob.py --skip-fetch   # reuse existing CSV
+    python backtests/run_arb_backtest_clob.py --max-events 500
 
 Output:
-    data/price_history.csv           — daily price per token
-    data/skipped_tokens.txt          — tokens with empty CLOB history
-    results/arb_backtest_monthly.csv — monthly performance
+    data/price_history.csv                    — daily price per token
+    data/skipped_tokens.txt                   — tokens with empty CLOB history
+    backtests/results/arb_backtest_monthly.csv — monthly performance
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ CLOB_API = "https://clob.polymarket.com"
 DB_PATH = PROJECT_ROOT / "watchdog.db"
 PRICE_HISTORY_CSV = PROJECT_ROOT / "data" / "price_history.csv"
 SKIPPED_TOKENS_TXT = PROJECT_ROOT / "data" / "skipped_tokens.txt"
-MONTHLY_CSV = PROJECT_ROOT / "results" / "arb_backtest_monthly.csv"
+MONTHLY_CSV = PROJECT_ROOT / "backtests" / "results" / "arb_backtest_monthly.csv"
 
 # ── Backtest parameters ────────────────────────────────────────────────────────
 RATE_LIMIT_SLEEP = 0.20          # 5 req/sec

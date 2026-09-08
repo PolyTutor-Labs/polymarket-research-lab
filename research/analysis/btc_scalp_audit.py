@@ -16,9 +16,9 @@ Unavailable columns (not stored anywhere):
   outcome_prices -- Gamma API field; never persisted to DB or CSV
 
 Usage:
-    python scripts/btc_scalp_audit.py
-    python scripts/btc_scalp_audit.py --csv data/btc_scalp_history_after_b580925.csv
-    python scripts/btc_scalp_audit.py --limit 40
+    python research/analysis/btc_scalp_audit.py
+    python research/analysis/btc_scalp_audit.py --csv data/btc_scalp_history_after_b580925.csv
+    python research/analysis/btc_scalp_audit.py --limit 40
 """
 from __future__ import annotations
 
@@ -78,7 +78,7 @@ def main() -> None:
             rows = list(csv.DictReader(f))
     except FileNotFoundError:
         print(f"ERROR: CSV not found: {args.csv}")
-        print("Run:  python scripts/btc_scalp_export.py  first.")
+        print("Run:  python research/analysis/btc_scalp_export.py  first.")
         sys.exit(1)
 
     # Collect the first (entry-time) scan row for each closed trade,

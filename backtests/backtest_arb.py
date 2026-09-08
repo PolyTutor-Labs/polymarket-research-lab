@@ -3,17 +3,17 @@
 Usage
 -----
 # Run with a local CSV file:
-    python scripts/backtest_arb.py --csv /path/to/markets.csv
+    python backtests/backtest_arb.py --csv /path/to/markets.csv
 
 # Download from Kaggle first (requires kaggle CLI + API key):
     kaggle datasets download <dataset-slug> -p /tmp/kaggle --unzip
-    python scripts/backtest_arb.py --csv /tmp/kaggle/markets.csv
+    python backtests/backtest_arb.py --csv /tmp/kaggle/markets.csv
 
 # Override output path:
-    python scripts/backtest_arb.py --csv markets.csv --out results/arb_backtest.csv
+    python backtests/backtest_arb.py --csv markets.csv --out backtests/results/arb_backtest.csv
 
 # Filter to a specific date range:
-    python scripts/backtest_arb.py --csv markets.csv --start 2024-01-01 --end 2024-06-30
+    python backtests/backtest_arb.py --csv markets.csv --start 2024-01-01 --end 2024-06-30
 
 Field Mapping (Kaggle CSV → internal event dict)
 -------------------------------------------------
@@ -295,8 +295,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--out",
-        default="results/arb_backtest.csv",
-        help="Output CSV path (default: results/arb_backtest.csv).",
+        default="backtests/results/arb_backtest.csv",
+        help="Output CSV path (default: backtests/results/arb_backtest.csv).",
     )
     parser.add_argument(
         "--start",

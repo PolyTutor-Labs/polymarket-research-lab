@@ -4,8 +4,8 @@ Shows open/closed counts, latest 20 trades, and any stale open trades
 (open longer than 15 minutes without closing).
 
 Usage:
-    python scripts/btc_scalp_trades.py               # reads DATABASE_URL / .env
-    python scripts/btc_scalp_trades.py --stale-min 30
+    python research/analysis/btc_scalp_trades.py               # reads DATABASE_URL / .env
+    python research/analysis/btc_scalp_trades.py --stale-min 30
 """
 from __future__ import annotations
 

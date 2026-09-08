@@ -17,8 +17,8 @@ Report: report.md — text summary with embedded chart links.
 Dependencies: matplotlib (pip install matplotlib).
 
 Usage:
-    python scripts/btc_scalp_charts.py
-    python scripts/btc_scalp_charts.py --csv data/btc_scalp_history.csv --out-dir data/reports
+    python research/analysis/btc_scalp_charts.py
+    python research/analysis/btc_scalp_charts.py --csv data/btc_scalp_history.csv --out-dir data/reports
 """
 from __future__ import annotations
 
@@ -97,7 +97,7 @@ def main() -> None:
             rows = list(csv.DictReader(f))
     except FileNotFoundError:
         print(f"ERROR: CSV not found: {args.csv}")
-        print("Run:  python scripts/btc_scalp_export.py  first.")
+        print("Run:  python research/analysis/btc_scalp_export.py  first.")
         sys.exit(1)
 
     os.makedirs(args.out_dir, exist_ok=True)
@@ -363,7 +363,7 @@ def main() -> None:
 
 ## Next Steps
 
-1. Run `python scripts/btc_scalp_analysis.py --calibrate` for logistic calibration coefficients.
+1. Run `python research/analysis/btc_scalp_analysis.py --calibrate` for logistic calibration coefficients.
 2. Review `[SignalAudit] anomaly=probability_book_mismatch` entries in Railway logs.
 3. Once ≥50 closed trades exist, the bucketed metrics become statistically meaningful.
 """
