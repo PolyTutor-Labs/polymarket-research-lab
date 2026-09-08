@@ -5,8 +5,6 @@ Reports only path, line number, and rule id. Never prints secret contents.
 Exit codes: 0 clean, 1 findings, 2 scanner error.
 """
 
-from __future__ import annotations
-
 import argparse
 import re
 import subprocess
