@@ -59,12 +59,55 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
 asyncio_default_fixture_loop_scope = "function"
+# Defense in depth: never collect generated artifacts, datasets, or research notebooks.
+norecursedirs = [
+  ".git",
+  ".venv",
+  "venv",
+  "__pycache__",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  "data",
+  "docs",
+  "outputs",
+  "logs",
+  "backtests",
+  "research",
+  "results",
+  "reports",
+  "Readings",
+]
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+exclude = [
+  ".git",
+  ".venv",
+  "venv",
+  "__pycache__",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  "data",
+  "docs",
+  "outputs",
+  "logs",
+  "backtests/results",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "N", "ASYNC", "C4", "SIM", "RUF"]
 ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+pretty = true
+show_error_codes = true
+files = ["src"]

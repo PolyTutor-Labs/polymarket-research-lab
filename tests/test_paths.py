@@ -4,6 +4,7 @@ from pathlib import Path
 
 from watchdog.core.paths import (
     data_dir,
+    log_dir,
     output_dir,
     repo_root,
     resolve_database_url,
@@ -27,6 +28,20 @@ def test_output_dir_defaults_to_repo_outputs() -> None:
     assert output_dir() == repo_root() / "outputs"
 
 
+def test_log_dir_defaults_to_repo_logs() -> None:
+    assert log_dir() == repo_root() / "logs"
+
+
+def test_repo_root_env_override(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("POLY_RESEARCH_ROOT", str(tmp_path))
+    assert repo_root() == tmp_path.resolve()
+
+
+def test_log_dir_env_override(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("POLY_RESEARCH_LOG_DIR", str(tmp_path / "logs"))
+    assert log_dir() == (tmp_path / "logs").resolve()
+
+
 def test_data_dir_env_override(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("POLY_RESEARCH_DATA_DIR", str(tmp_path))
     assert data_dir() == tmp_path.resolve()
@@ -47,6 +62,11 @@ def test_resolve_user_path_absolute_unchanged(tmp_path: Path) -> None:
     assert resolve_user_path(target) == target
 
 
+def test_resolve_user_path_relative_to_explicit_base(tmp_path: Path) -> None:
+    resolved = resolve_user_path("nested/file.csv", base=tmp_path)
+    assert resolved == (tmp_path / "nested" / "file.csv").resolve()
+
+
 def test_resolve_database_url_relative_sqlite() -> None:
     resolved = resolve_database_url("sqlite:///watchdog.db")
     expected = (repo_root() / "watchdog.db").resolve()
@@ -60,6 +80,27 @@ def test_resolve_database_url_memory_unchanged() -> None:
 def test_resolve_database_url_absolute_unchanged() -> None:
     url = "sqlite:////var/tmp/research.db"
     assert resolve_database_url(url) == url
+
+
+def test_resolve_database_url_non_sqlite_unchanged() -> None:
+    url = "postgresql://user:pass@localhost/research"
+    assert resolve_database_url(url) == url
+
+
+def test_resolve_database_url_empty_sqlite_rest_unchanged() -> None:
+    assert resolve_database_url("sqlite:///") == "sqlite:///"
+
+
+def test_sqlite_file_path_default_when_env_unset(monkeypatch) -> None:
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    expected = (repo_root() / "watchdog.db").resolve()
+    assert sqlite_file_path() == expected
+
+
+def test_seed_sql_candidates_include_github_workspace(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("GITHUB_WORKSPACE", str(tmp_path))
+    candidates = seed_sql_candidates()
+    assert tmp_path / "db" / "seed_data.sql" in candidates
 
 
 def test_sqlite_file_path_honors_database_url(monkeypatch, tmp_path: Path) -> None:
