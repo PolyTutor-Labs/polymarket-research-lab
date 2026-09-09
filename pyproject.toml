@@ -5,11 +5,30 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "watchdog"
 version = "0.1.0"
-description = "Watchdog: dual-agent prediction market intelligence system"
+description = "Educational Polymarket research and analysis laboratory for studying prediction-market data, calibration, paper experiments, and offline backtests"
 readme = "README.md"
 requires-python = ">=3.11"
+license = {text = "MIT"}
 authors = [
-  { name = "Daniel" }
+  { name = "PolyTutor Labs" }
+]
+keywords = [
+  "polymarket",
+  "research",
+  "analysis",
+  "backtesting",
+  "education",
+  "prediction-markets",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
 ]
 dependencies = [
   "alembic>=1.14.0",
@@ -37,6 +56,12 @@ dependencies = [
   "websockets>=12.0",
   "aiohttp>=3.9.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/PolyTutor-Labs/polymarket-research-lab"
+Repository = "https://github.com/PolyTutor-Labs/polymarket-research-lab"
+Issues = "https://github.com/PolyTutor-Labs/polymarket-research-lab/issues"
+Changelog = "https://github.com/PolyTutor-Labs/polymarket-research-lab/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [

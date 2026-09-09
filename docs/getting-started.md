@@ -124,7 +124,7 @@ watchdog run-pipeline-loop --iterations 0 --interval-seconds 60
 
 The same checkout should run on any machine:
 
-- Do not hardcode `/Users/…` or `C:\…` in scripts or notes you contribute.
+- Do not hardcode a personal machine home directory in scripts or notes you contribute.
 - Prefer `POLY_RESEARCH_*` overrides when data or outputs live outside the repo.
 - Activate `.venv` on Unix or Windows, or call the environment’s `python` directly.
 

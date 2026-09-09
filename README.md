@@ -1,5 +1,6 @@
 # PolyTutor Labs — Polymarket Research Lab
 
+**Version:** [v0.1.0](CHANGELOG.md)
 **Category:** Research / Analysis Laboratory
 **Level:** Intermediate
 **Package:** `watchdog` 0.1.0 (Python 3.11+)
@@ -43,6 +44,7 @@ PolyTutor work on this repository includes:
 - security hardening and a published security audit
 - test and quality-gate stabilization
 - educational documentation
+- public-release packaging (changelog, license, metadata)
 
 The original application code was not authored from scratch here. See [Attribution](#attribution).
 
@@ -122,6 +124,8 @@ Details: [docs/architecture.md](docs/architecture.md).
 ```text
 polymarket-research-lab/
 ├── README.md
+├── CHANGELOG.md
+├── LICENSE
 ├── CONTRIBUTING.md
 ├── DISCLAIMER.md
 ├── SECURITY.md
@@ -204,6 +208,8 @@ CI on pull requests runs the secret scan, ruff on `src/`, a non-blocking mypy pa
 | [docs/BTC_SCALP_RETROSPECTIVE.md](docs/BTC_SCALP_RETROSPECTIVE.md) | Retired strategy, negative result |
 | [SECURITY.md](SECURITY.md) | Secrets policy, dataset classification, reporting |
 | [SECURITY_AUDIT.md](SECURITY_AUDIT.md) | Historical pre-transform audit of the upstream repo |
+| [CHANGELOG.md](CHANGELOG.md) | Version history (v0.1.0) |
+| [LICENSE](LICENSE) | MIT license and attribution |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | What contributions are accepted |
 | [DISCLAIMER.md](DISCLAIMER.md) | Educational-use disclaimer |
 
@@ -243,4 +249,8 @@ This repository is an educational packaging by **PolyTutor Labs** of research so
 
 **[https://github.com/daniel-st3/poly-what](https://github.com/daniel-st3/poly-what)**
 
-Upstream authors retain credit for the original Watchdog research codebase. PolyTutor Labs organized, hardened, and documented this checkout for classroom and self-study use. We are not affiliated with Polymarket or with the original authors unless they participate here separately.
+Upstream authors retain credit for the original Watchdog research codebase. PolyTutor Labs organized, hardened, documented, and packaged this checkout for classroom and self-study use. We are not affiliated with Polymarket or with the original authors unless they participate here separately.
+
+## License
+
+MIT. See [LICENSE](LICENSE). PolyTutor Labs does not claim authorship of the original application code.

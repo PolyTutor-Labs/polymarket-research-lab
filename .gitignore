@@ -45,6 +45,10 @@ outputs/
 
 # Packaging metadata
 *.egg-info/
+dist/
+build/
+.coverage
+htmlcov/
 
 # Logs
 logs/
